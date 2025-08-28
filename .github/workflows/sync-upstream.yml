@@ -49,12 +49,34 @@ jobs:
       - name: Merge upstream changes
         if: steps.changes.outputs.changes == 'true'
         run: |
-          git merge upstream/main --no-edit
-          git push origin main
+          echo "Attempting to merge upstream changes..."
+          if git merge upstream/main --no-edit; then
+            echo "Merge successful, pushing changes..."
+            git push origin main
+            echo "sync_success=true" >> $GITHUB_OUTPUT
+          else
+            echo "Merge conflict detected! Manual intervention required."
+            git merge --abort
+            echo "sync_success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        id: merge
 
       - name: Trigger build workflow
-        if: steps.changes.outputs.changes == 'true'
+        if: steps.changes.outputs.changes == 'true' && steps.merge.outputs.sync_success == 'true'
         run: |
-          gh workflow run build_docker_images.yml --ref main
+          echo "Triggering multi-arch Docker build..."
+          gh workflow run build_docker_images.yml --repo ${{ github.repository }} --ref main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create issue on merge conflict
+        if: steps.changes.outputs.changes == 'true' && steps.merge.outputs.sync_success == 'false'
+        run: |
+          gh issue create \
+            --title "🚨 Upstream Sync Failed - Merge Conflict" \
+            --body "The automated upstream sync failed due to merge conflicts. Manual intervention is required to resolve conflicts between your fork and the upstream repository. Please check the workflow logs and resolve conflicts manually." \
+            --label "sync-conflict" \
+            --repo ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
