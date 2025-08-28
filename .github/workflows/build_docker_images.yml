@@ -70,12 +70,13 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          # Multi-architecture build supporting:
-          # - linux/amd64: x86_64 (most PCs)
-          # - linux/arm64: ARM64 (RPi4, Apple Silicon)
-          # - linux/arm/v7: ARMv7 (RPi3, RPi2)
-          # - linux/arm/v6: ARMv6 (RPi Zero, RPi1)
-          platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
+          # Multi-architecture build supporting all modern systems:
+          # - linux/amd64: x86_64 (most PCs, servers, Intel/AMD)
+          # - linux/i386: x86 32-bit (older PCs, legacy systems)
+          # - linux/arm64: ARM64 (RPi4, RPi5, Apple Silicon, ARM servers)
+          # - linux/arm/v7: ARMv7 (RPi3, RPi2, many ARM devices)
+          # - linux/arm/v6: ARMv6 (RPi Zero, RPi1, older ARM devices)
+          platforms: linux/amd64, linux/i386, linux/arm64, linux/arm/v7, linux/arm/v6
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -2,13 +2,23 @@
 
 This fork provides enhanced Docker image support for all Raspberry Pi models through automated multi-architecture builds.
 
-## Supported Architectures
+## Supported Raspberry Pi Architectures
 
 | Architecture | Raspberry Pi Models | Docker Platform |
 |:-------------|:-------------------|:----------------|
-| ARMv6        | Pi Zero, Pi 1      | `linux/arm/v6`  |
-| ARMv7        | Pi 2, Pi 3         | `linux/arm/v7`  |
-| ARM64        | Pi 4, Pi 5         | `linux/arm64`   |
+| ARM64        | Pi 4, **Pi 5** | `linux/arm64` |
+| ARMv7        | Pi 2, Pi 3 | `linux/arm/v7` |
+| ARMv6        | Pi Zero, Pi 1 | `linux/arm/v6` |
+
+### Raspberry Pi Specific Support
+| Pi Model | Architecture | Docker Platform | Performance |
+|:---------|:-------------|:----------------|:------------|
+| **Pi 5**     | ARM64    | `linux/arm64`   | Excellent ⭐⭐⭐⭐⭐ |
+| **Pi 4**     | ARM64    | `linux/arm64`   | Excellent ⭐⭐⭐⭐⭐ |
+| **Pi 3**     | ARMv7    | `linux/arm/v7`  | Good ⭐⭐⭐⭐ |
+| **Pi 2**     | ARMv7    | `linux/arm/v7`  | Good ⭐⭐⭐ |
+| **Pi Zero**  | ARMv6    | `linux/arm/v6`  | Basic ⭐⭐ |
+| **Pi 1**     | ARMv6    | `linux/arm/v6`  | Basic ⭐ |
 
 ## Quick Start
 
@@ -43,13 +53,13 @@ docker run -d \
 
 ## Installation by Raspberry Pi Model
 
-### Raspberry Pi Zero / Pi 1 (ARMv6)
+### Raspberry Pi 5 / Pi 4 (ARM64)
 ```bash
 # Verify architecture
-uname -m  # Should show: armv6l
+uname -m  # Should show: aarch64
 
 # Pull specific architecture (optional, Docker will auto-select)
-docker pull --platform linux/arm/v6 ghcr.io/gaiar/isponsorblocktv:latest
+docker pull --platform linux/arm64 ghcr.io/gaiar/isponsorblocktv:latest
 ```
 
 ### Raspberry Pi 2 / Pi 3 (ARMv7)
@@ -61,13 +71,13 @@ uname -m  # Should show: armv7l
 docker pull --platform linux/arm/v7 ghcr.io/gaiar/isponsorblocktv:latest
 ```
 
-### Raspberry Pi 4 / Pi 5 (ARM64)
+### Raspberry Pi Zero / Pi 1 (ARMv6)
 ```bash
 # Verify architecture
-uname -m  # Should show: aarch64
+uname -m  # Should show: armv6l
 
 # Pull specific architecture (optional, Docker will auto-select)
-docker pull --platform linux/arm64 ghcr.io/gaiar/isponsorblocktv:latest
+docker pull --platform linux/arm/v6 ghcr.io/gaiar/isponsorblocktv:latest
 ```
 
 ## Automated Updates
