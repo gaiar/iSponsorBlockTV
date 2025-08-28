@@ -36,7 +36,7 @@ jobs:
         with:
           images: |
             ghcr.io/${{ github.repository }}
-            ${{ env.DOCKERHUB_USERNAME && 'dmunozv04/isponsorblocktv' || '' }}
+            ${{ env.DOCKERHUB_USERNAME && 'gaiar/isponsorblocktv' || '' }}
           tags: |
             type=raw,value=develop,priority=900,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             type=ref,enable=true,priority=600,prefix=pr-,suffix=,event=pr
@@ -71,7 +71,12 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          # Multi-architecture build supporting:
+          # - linux/amd64: x86_64 (most PCs)
+          # - linux/arm64: ARM64 (RPi4, Apple Silicon)
+          # - linux/arm/v7: ARMv7 (RPi3, RPi2)
+          # - linux/arm/v6: ARMv6 (RPi Zero, RPi1)
+          platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
