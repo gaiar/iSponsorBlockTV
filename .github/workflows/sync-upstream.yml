@@ -51,7 +51,23 @@ jobs:
         run: |
           echo "Attempting to merge upstream changes..."
           if git merge upstream/main --no-edit; then
-            echo "Merge successful, pushing changes..."
+            echo "Merge successful, preserving fork-specific files..."
+            
+            # Remove upstream workflows that don't apply to fork
+            if [ -f ".github/workflows/update_docker_readme.yml" ]; then
+              git rm .github/workflows/update_docker_readme.yml
+              echo "Removed upstream DockerHub workflow"
+            fi
+            
+            # Commit removal if files were deleted
+            if ! git diff --cached --quiet; then
+              git commit -m "Preserve fork-specific workflow configuration
+
+Remove upstream workflows that are incompatible with fork:
+- update_docker_readme.yml: Requires DockerHub credentials, fork uses GHCR only"
+            fi
+            
+            echo "Pushing changes..."
             git push origin main
             echo "sync_success=true" >> $GITHUB_OUTPUT
           else
