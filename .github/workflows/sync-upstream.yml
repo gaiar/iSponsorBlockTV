@@ -61,10 +61,7 @@ jobs:
             
             # Commit removal if files were deleted
             if ! git diff --cached --quiet; then
-              git commit -m "Preserve fork-specific workflow configuration
-
-Remove upstream workflows that are incompatible with fork:
-- update_docker_readme.yml: Requires DockerHub credentials, fork uses GHCR only"
+              git commit -m "Remove upstream workflows incompatible with fork (DockerHub credentials)"
             fi
             
             echo "Pushing changes..."
