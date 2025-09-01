@@ -68,10 +68,24 @@ jobs:
             git push origin main
             echo "sync_success=true" >> $GITHUB_OUTPUT
           else
-            echo "Merge conflict detected! Manual intervention required."
-            git merge --abort
-            echo "sync_success=false" >> $GITHUB_OUTPUT
-            exit 1
+            echo "Merge conflict detected, attempting automatic resolution..."
+            
+            # Handle modify/delete conflicts for DockerHub workflow
+            if git status --porcelain | grep -q "DU .github/workflows/update_docker_readme.yml"; then
+              echo "Resolving modify/delete conflict for DockerHub workflow..."
+              git rm .github/workflows/update_docker_readme.yml
+              git add .
+              git commit --no-edit
+              
+              echo "Conflict resolved, pushing changes..."
+              git push origin main
+              echo "sync_success=true" >> $GITHUB_OUTPUT
+            else
+              echo "Complex merge conflict detected! Manual intervention required."
+              git merge --abort
+              echo "sync_success=false" >> $GITHUB_OUTPUT
+              exit 1
+            fi
           fi
         id: merge
 
